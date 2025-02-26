@@ -11,6 +11,12 @@ dotenv.config();
 
 const app = express();
 
+app.get("/", (req, res) => {
+  res.json({
+    message: "Welcome to Campus connect Backend API",
+  });
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
