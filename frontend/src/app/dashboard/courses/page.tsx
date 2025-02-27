@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import CourseCard from "@/components/CourseCard";
-import { Course } from "@/types";
+import { Course } from "@/types/course";
 import Link from "next/link";
 
 export default function CoursesPage() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,13 +83,13 @@ export default function CoursesPage() {
         <div>
           <h1 className="text-2xl font-bold">All Courses</h1>
           <p className="text-gray-600">
-            {currentUser?.role === "student"
+            {user?.role === "student"
               ? "Browse and enroll in available courses"
               : "Manage your courses and materials"}
           </p>
         </div>
 
-        {currentUser?.role === "lecturer" && (
+        {user?.role === "lecturer" && (
           <Link
             href="/dashboard/courses/new"
             className="btn-primary px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition duration-200"
@@ -125,7 +125,7 @@ export default function CoursesPage() {
               key={course.id}
               course={course}
               actionButton={
-                currentUser?.role === "student"
+                user?.role === "student"
                   ? {
                       label: "Enroll",
                       action: `/dashboard/courses/${course.id}/enroll`,

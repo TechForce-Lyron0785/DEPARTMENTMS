@@ -3,19 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { authService } from "@/services/auth.service";
 
 export default function Register() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register } = authService;
   const [formData, setFormData] = useState<{
-    fullName: string;
+    name: string;
     email: string;
     password: string;
     confirmPassword: string;
     role: "student" | "lecturer";
   }>({
-    fullName: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -45,6 +45,7 @@ export default function Register() {
     try {
       await register(formData);
       router.push("/dashboard");
+      console.log("account created succesfully...");
     } catch (err) {
       setError("Failed to create an account. Please try again.");
       console.error(err);
@@ -72,11 +73,11 @@ export default function Register() {
               </label>
               <input
                 id="fullName"
-                name="fullName"
+                name="name"
                 type="text"
                 required
                 className="form-input border rounded-md p-2 w-full mt-2"
-                value={formData.fullName}
+                value={formData.name}
                 onChange={handleChange}
               />
             </div>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
-  const { currentUser } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <nav className="bg-gray-800 text-white h-20 mx-auto flex justify-between items-center w-full px-4">
@@ -12,24 +12,24 @@ export default function Navbar() {
         Campus connect
       </Link>
       <ul className="flex space-x-4">
-        <li>
-          <Link href="/dashboard" className="hover:underline">
-            Dashboard
-          </Link>
-        </li>
-        <li>
-          <Link href="/dashboard/courses" className="hover:underline">
-            Courses
-          </Link>
-        </li>
-        {currentUser ? (
+        {user ? (
           <>
+            <li>
+              <Link href="/dashboard" className="hover:underline">
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link href="/dashboard/courses" className="hover:underline">
+                Courses
+              </Link>
+            </li>
             <li>
               <Link href="/dashboard/profile" className="hover:underline">
                 Profile
               </Link>
             </li>
-            {currentUser.role === "lecturer" && (
+            {user.role === "lecturer" && (
               <li>
                 <Link href="/dashboard/courses/new" className="hover:underline">
                   Create Course
@@ -37,17 +37,24 @@ export default function Navbar() {
               </li>
             )}
             <li>
-              <Link href="/logout" className="hover:underline">
+              <button onClick={logout} className="hover:underline">
                 Logout
-              </Link>
+              </button>
             </li>
           </>
         ) : (
-          <li>
-            <Link href="/register" className="hover:underline">
-              Register
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link href="/login" className="hover:underline">
+                Login
+              </Link>
+            </li>
+            <li>
+              <Link href="/register" className="hover:underline">
+                Register
+              </Link>
+            </li>
+          </>
         )}
       </ul>
     </nav>

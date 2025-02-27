@@ -4,15 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useApiError } from "@/hooks/useApiError";
 
 export default function Login() {
   const router = useRouter();
   const { login } = useAuth();
+  const { error, handleError, clearError } = useApiError();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,15 +23,14 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    clearError();
     setLoading(true);
 
     try {
       await login(formData.email, formData.password);
       router.push("/dashboard");
     } catch (err) {
-      setError("Failed to log in. Please check your credentials.");
-      console.error(err);
+      handleError(err);
     } finally {
       setLoading(false);
     }

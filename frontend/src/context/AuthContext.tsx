@@ -1,60 +1,54 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
-
-interface User {
-  fullName: string;
-  email: string;
-  role: "student" | "lecturer";
-  department?: string;
-  bio?: string;
-}
+import { createContext, useContext, useState, useEffect } from "react";
+import { User } from "../types/user";
+import { authService } from "../services/auth.service";
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
-  currentUser: User | null;
+  user: User | null;
   loading: boolean;
-  updateProfile: (data: Partial<User>) => Promise<void>;
-  register: (data: User) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  const updateProfile = async (data: Partial<User>) => {
-    // Simulate API call
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setCurrentUser((prev) => ({ ...prev, ...data } as User));
+  useEffect(() => {
+    // Check token and load user data
+    const token = localStorage.getItem("token");
+    if (token) {
+      // Verify token and load user data
+    }
     setLoading(false);
-  };
+  }, []);
 
-  const register = async (data: User) => {
-    // Simulate registration
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setCurrentUser(data);
-    setLoading(false);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const login = async (email: string, password: string) => {
-    // Simulate login
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setCurrentUser({ fullName: "John Doe", email, role: "student" });
-    setLoading(false);
+    const response = await authService.login({ email, password });
+    localStorage.setItem("token", response.token);
+    setUser(response.user);
+  };
+
+  const logout = async () => {
+    try {
+      await authService.logout();
+      setUser(null);
+      router.push("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      localStorage.removeItem("token");
+      setUser(null);
+      router.push("/login");
+    }
   };
 
   return (
-    <AuthContext.Provider
-      value={{ currentUser, loading, updateProfile, register, login }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -62,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;

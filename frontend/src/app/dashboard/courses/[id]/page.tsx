@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Course, Material } from "@/types";
+import { Course } from "@/types/course";
+import { Material } from "@/types/material";
 import Link from "next/link";
 
 export default function CourseDetailsPage() {
   const { id } = useParams();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,7 +95,7 @@ export default function CourseDetailsPage() {
           <div>
             <div className="flex flex-col items-start lg:flex-row gap-4 lg:gap-0 justify-between">
               <h1 className="text-2xl font-bold">{course.title}</h1>
-              {currentUser?.role === "lecturer" && (
+              {user?.role === "lecturer" && (
                 <div className="mb-4">
                   <Link
                     href={`/dashboard/courses/${course.id}/edit`}
@@ -227,7 +228,7 @@ export default function CourseDetailsPage() {
                             >
                               Download
                             </Link>
-                            {currentUser?.role === "lecturer" && (
+                            {user?.role === "lecturer" && (
                               <Link
                                 href="#"
                                 className="text-red-600 hover:text-red-900"
@@ -246,7 +247,7 @@ export default function CourseDetailsPage() {
                   <p className="text-gray-500 mb-4">
                     No materials have been uploaded for this course yet.
                   </p>
-                  {currentUser?.role === "lecturer" && (
+                  {user?.role === "lecturer" && (
                     <Link
                       href={`/dashboard/courses/${course.id}/materials/upload`}
                       className="btn-primary"

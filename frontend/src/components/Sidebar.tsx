@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="bg-gray-800 text-white w-56 h-[calc(100vh-8rem)] p-4 text-left">
@@ -24,7 +24,7 @@ export default function Sidebar() {
             Profile
           </Link>
         </li>
-        {currentUser?.role === "lecturer" && (
+        {user?.role === "lecturer" && (
           <li>
             <Link href="/dashboard/courses/new" className="hover:underline">
               Create Course

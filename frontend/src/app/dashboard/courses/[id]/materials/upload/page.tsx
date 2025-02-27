@@ -8,7 +8,7 @@ import Link from "next/link";
 export default function UploadMaterialPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -19,7 +19,7 @@ export default function UploadMaterialPage() {
   const [error, setError] = useState("");
 
   // Check if user is a lecturer
-  if (currentUser?.role !== "lecturer") {
+  if (user?.role !== "lecturer") {
     router.push("/dashboard");
     return null;
   }

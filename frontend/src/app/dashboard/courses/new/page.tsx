@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function CreateCoursePage() {
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     code: "",
@@ -21,7 +21,7 @@ export default function CreateCoursePage() {
   const [error, setError] = useState("");
 
   // Check if user is a lecturer
-  if (currentUser?.role !== "lecturer") {
+  if (user?.role !== "lecturer") {
     router.push("/dashboard");
     return null;
   }

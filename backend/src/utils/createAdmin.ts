@@ -13,8 +13,8 @@ const createAdminUser = async () => {
     const hashedPassword = await hashPassword("password");
 
     const adminUser = new User({
-      name: "Admin User",
-      email: "admin@admin.com",
+      name: "Admin",
+      email: "admin@campusconnect.com",
       password: hashedPassword,
       role: "admin",
     });

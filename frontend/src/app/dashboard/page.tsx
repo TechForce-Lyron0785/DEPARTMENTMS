@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import CourseCard from "@/components/CourseCard";
-import { Course } from "@/types";
+import { Course } from "@/types/course";
 
 export default function Dashboard() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
+  console.log("user", user);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,15 +66,13 @@ export default function Dashboard() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold">
-            Welcome, {currentUser?.fullName}
-          </h1>
+          <h1 className="text-2xl font-bold">Welcome, {user?.name}</h1>
           <p className="text-gray-600">
             Here&apos;s an overview of your courses
           </p>
         </div>
 
-        {currentUser?.role === "lecturer" && (
+        {user?.role === "lecturer" && (
           <a href="/dashboard/courses/new" className="btn-primary">
             Create New Course
           </a>
@@ -86,7 +86,7 @@ export default function Dashboard() {
           <p className="text-3xl font-bold">{mockCourses.length}</p>
         </div>
 
-        {currentUser?.role === "student" ? (
+        {user?.role === "student" ? (
           <></>
         ) : (
           <>
@@ -130,7 +130,7 @@ export default function Dashboard() {
           <p className="text-lg text-gray-600 mb-4">
             You haven&apos;t been assigned to any courses yet.
           </p>
-          {currentUser?.role === "student" && (
+          {user?.role === "student" && (
             <a href="/dashboard/courses/browse" className="btn-primary">
               Browse Available Courses
             </a>
