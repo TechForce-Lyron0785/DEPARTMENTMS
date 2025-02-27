@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { User } from "../models/User";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 type AsyncRequestHandler = (
   req: Request,
@@ -52,5 +53,33 @@ export const loginUser: AsyncRequestHandler = async (req, res, next) => {
     return res.status(200).json({ token, user });
   } catch (error) {
     next(error);
+  }
+};
+
+export const verifyToken: AsyncRequestHandler = async (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Get the token from the Authorization header
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, message: "No token provided" });
+  }
+
+  try {
+    // Verify the token using your secret key
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload; // Assert the type to JwtPayload
+
+    // Fetch the user from the database using the ID from the decoded token
+    const user = await User.findById(decoded.userId).select("-password");
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Return the user data
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    return res.status(401).json({ success: false, message: "Invalid token" });
   }
 };

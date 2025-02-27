@@ -1,19 +1,24 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
+import { Course } from "./Course";
+import { User } from "./User";
 
-const materialSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  fileUrl: { type: String, required: true },
-  courseId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
-    required: true,
-  },
-  uploadedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  uploadedAt: { type: Date, default: Date.now },
-});
+export interface IMaterial extends Document {
+  title: string;
+  fileUrl: string;
+  courseId: Schema.Types.ObjectId | typeof Course;
+  uploadedBy: Schema.Types.ObjectId | typeof User;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export const Material = mongoose.model("Material", materialSchema);
+const materialSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    fileUrl: { type: String, required: true },
+    courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
+    uploadedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  },
+  { timestamps: true }
+);
+
+export const Material = mongoose.model<IMaterial>("Material", materialSchema);

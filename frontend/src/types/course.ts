@@ -4,9 +4,11 @@ import { User } from "./user";
 export interface Course {
   _id: string;
   title: string;
+  courseCode: string;
   description: string;
-  lecturer: string | User; // Can be either ID or populated user object
-  students: string[] | User[]; // Can be either IDs or populated user objects
+  lecturer: string | User;
+  students: string[] | User[];
+  materials: string[] | Material[];
   createdAt: string;
   updatedAt: string;
 }

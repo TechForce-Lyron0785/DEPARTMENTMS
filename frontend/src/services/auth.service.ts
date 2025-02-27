@@ -1,5 +1,11 @@
+import { ApiResponse } from "@/types/api";
 import axios from "../lib/axios";
-import { LoginCredentials, RegisterData, AuthResponse } from "../types/user";
+import {
+  LoginCredentials,
+  RegisterData,
+  AuthResponse,
+  User,
+} from "../types/user";
 
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -12,11 +18,28 @@ export const authService = {
     return response.data;
   },
 
+  updateUser: async (
+    id: string,
+    data: Partial<User>
+  ): Promise<ApiResponse<User>> => {
+    const response = await axios.put(`/users/${id}`, data);
+    return response.data;
+  },
+
   logout: async (): Promise<void> => {
     try {
       await axios.post("/auth/logout");
     } finally {
       localStorage.removeItem("token");
     }
+  },
+
+  verifyToken: async (token: string): Promise<ApiResponse<User>> => {
+    const response = await axios.get("/auth/verify", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
   },
 };

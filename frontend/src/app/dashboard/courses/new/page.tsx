@@ -4,21 +4,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
+import { courseService } from "@/services/course.service";
+import { useApiError } from "@/hooks/useApiError";
 
 export default function CreateCoursePage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { error, handleError, clearError } = useApiError();
   const [formData, setFormData] = useState({
     title: "",
     code: "",
     description: "",
-    department: "",
-    credits: "",
-    startDate: "",
-    endDate: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Check if user is a lecturer
   if (user?.role !== "lecturer") {
@@ -37,24 +36,18 @@ export default function CreateCoursePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    clearError();
     setLoading(true);
+    setSuccessMessage("");
 
     try {
-      // In a real app, this would be an API call
-      // const response = await fetch('/api/courses', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData),
-      // });
-
-      // Simulate API request
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      router.push("/dashboard/courses");
+      // Call the createCourse service
+      const response = await courseService.createCourse(formData);
+      setSuccessMessage("Course created successfully!"); // Set success message
+      console.log(response); // Log the response for debugging
+      router.push("/dashboard/courses"); // Redirect to the courses dashboard
     } catch (err) {
-      setError("Failed to create course. Please try again.");
-      console.error(err);
+      handleError(err); // Handle any errors
     } finally {
       setLoading(false);
     }
@@ -74,6 +67,11 @@ export default function CreateCoursePage() {
           {error && (
             <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
               {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="bg-green-50 text-green-500 p-3 rounded-md mb-4">
+              {successMessage}
             </div>
           )}
 
@@ -124,78 +122,6 @@ export default function CreateCoursePage() {
               onChange={handleChange}
               placeholder="Provide a detailed description of the course content and objectives"
             ></textarea>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label htmlFor="department" className="form-label">
-                Department
-              </label>
-              <select
-                id="department"
-                name="department"
-                className="form-input border rounded-md p-2 w-full mt-2"
-                value={formData.department}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Department</option>
-                <option value="cs">Computer Science</option>
-                <option value="math">Mathematics</option>
-                <option value="eng">Engineering</option>
-                <option value="bus">Business</option>
-                <option value="arts">Arts & Humanities</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="credits" className="form-label">
-                Credits
-              </label>
-              <input
-                id="credits"
-                name="credits"
-                type="number"
-                min="1"
-                max="6"
-                required
-                className="form-input border rounded-md p-2 w-full mt-2"
-                value={formData.credits}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label htmlFor="startDate" className="form-label">
-                Start Date
-              </label>
-              <input
-                id="startDate"
-                name="startDate"
-                type="date"
-                required
-                className="form-input border rounded-md p-2 w-full mt-2"
-                value={formData.startDate}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="endDate" className="form-label">
-                End Date
-              </label>
-              <input
-                id="endDate"
-                name="endDate"
-                type="date"
-                required
-                className="form-input border rounded-md p-2 w-full mt-2"
-                value={formData.endDate}
-                onChange={handleChange}
-              />
-            </div>
           </div>
 
           <div className="flex justify-end">

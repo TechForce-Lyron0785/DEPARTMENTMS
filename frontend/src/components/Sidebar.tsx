@@ -14,11 +14,13 @@ export default function Sidebar() {
             Dashboard
           </Link>
         </li>
-        <li>
-          <Link href="/dashboard/courses" className="hover:underline">
-            Courses
-          </Link>
-        </li>
+        {user!.role !== "lecturer" && (
+          <li>
+            <Link href="/dashboard/courses" className="hover:underline">
+              Courses
+            </Link>
+          </li>
+        )}
         <li>
           <Link href="/dashboard/profile" className="hover:underline">
             Profile
@@ -31,11 +33,6 @@ export default function Sidebar() {
             </Link>
           </li>
         )}
-        <li>
-          <Link href="/dashboard/courses/browse" className="hover:underline">
-            Browse Courses
-          </Link>
-        </li>
       </ul>
     </div>
   );

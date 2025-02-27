@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import Sidebar from "@/components/Sidebar";
 
 export default function DashboardLayout({
   children,
@@ -33,7 +32,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex bg-gray-50">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <div className="flex-1 p-6 md:p-8 overflow-y-auto">{children}</div>
     </div>
   );

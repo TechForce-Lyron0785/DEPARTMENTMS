@@ -10,7 +10,8 @@
     "create-admin": "ts-node src/utils/createAdmin.ts",
     "seed-db": "ts-node src/utils/seedDatabase.ts",
     "clear-db": "ts-node src/utils/clearDatabase.ts",
-    "assign-students": "ts-node src/utils/assignStudentsToCourses.ts"
+    "assign-students": "ts-node src/utils/assignStudentsToCourses.ts",
+    "update-schema": "ts-node src/utils/updateCourseSchema.ts"
   },
   "keywords": [],
   "author": "",

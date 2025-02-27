@@ -22,3 +22,25 @@ export const getUserById: RequestHandler = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch user" });
   }
 };
+
+export const updateUser: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, role } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { name, email, role },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
+
+    res.status(200).json({ success: true, data: updatedUser });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};

@@ -15,7 +15,7 @@ export default function CoursesPage() {
   // Mock courses data
   const mockCourses: Course[] = [
     {
-      id: "1",
+      _id: "1",
       title: "Introduction to Computer Science",
       code: "CS101",
       description: "Fundamental concepts of computer science and programming.",

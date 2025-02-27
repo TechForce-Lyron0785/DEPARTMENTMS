@@ -11,7 +11,7 @@ export const materialService = {
     courseId: string,
     params?: QueryParams
   ): Promise<ApiResponse<PaginatedResponse<Material>>> => {
-    const response = await axios.get(`/materials/course/${courseId}`, {
+    const response = await axios.get(`/materials/${courseId}`, {
       params,
     });
     return response.data;

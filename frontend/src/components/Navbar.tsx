@@ -19,11 +19,13 @@ export default function Navbar() {
                 Dashboard
               </Link>
             </li>
-            <li>
-              <Link href="/dashboard/courses" className="hover:underline">
-                Courses
-              </Link>
-            </li>
+            {user.role !== "lecturer" && (
+              <li>
+                <Link href="/dashboard/courses" className="hover:underline">
+                  Courses
+                </Link>
+              </li>
+            )}
             <li>
               <Link href="/dashboard/profile" className="hover:underline">
                 Profile

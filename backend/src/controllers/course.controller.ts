@@ -20,6 +20,35 @@ export const getCourses: RequestHandler = async (req, res) => {
   }
 };
 
+export const getLecturerCourses: RequestHandler = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const lecturerId = req.params.lecturerId;
+
+    const courses = await Course.find({ lecturer: lecturerId })
+      .populate("lecturer", "name email")
+      .populate("materials")
+      .skip((Number(page) - 1) * Number(limit))
+      .limit(Number(limit))
+      .sort({ createdAt: -1 });
+
+    const total = await Course.countDocuments({ lecturer: lecturerId });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        data: courses,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit)),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getCourseById: RequestHandler = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
@@ -58,5 +87,26 @@ export const deleteCourse: RequestHandler = async (req, res) => {
     res.status(200).json({ message: "Course deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to delete course" });
+  }
+};
+
+export const getStudentsByCourse: RequestHandler = async (req, res, next) => {
+  try {
+    const { courseId } = req.params;
+
+    // Find the course and populate the students
+    const course = await Course.findById(courseId).populate("students");
+
+    if (!course) {
+      res.status(404).json({ success: false, message: "Course not found" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: course.students,
+    });
+  } catch (error) {
+    next(error);
   }
 };

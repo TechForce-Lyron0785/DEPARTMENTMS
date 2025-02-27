@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   user: User | null;
+  setUser: (user: User) => void;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -20,12 +21,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Check token and load user data
     const token = localStorage.getItem("token");
     if (token) {
       // Verify token and load user data
+      const loadUserData = async () => {
+        try {
+          const response = await authService.verifyToken(token); // Assuming you have a method to verify the token
+          console.log("response", response);
+
+          setUser(response.user); // Set the user data
+        } catch (error) {
+          console.error("Failed to load user data:", error);
+          localStorage.removeItem("token"); // Remove invalid token
+        }
+        setLoading(false); // Set loading to false after attempting to load user data
+      };
+
+      loadUserData();
+    } else {
+      setLoading(false); // No token, just set loading to false
     }
-    setLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -48,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
