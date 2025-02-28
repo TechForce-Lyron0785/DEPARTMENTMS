@@ -5,7 +5,8 @@ import Link from "next/link";
 
 interface ActionButton {
   label: string;
-  action: string;
+  action?: string;
+  onClick?: () => void;
 }
 
 interface CourseCardProps {
@@ -47,12 +48,25 @@ export default function CourseCard({ course, actionButton }: CourseCardProps) {
           {Array.isArray(course.materials) ? course.materials.length : 0}
         </p>
       </div>
-      <Link
-        href={actionButton.action}
-        className="btn-primary px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
-      >
-        {actionButton.label}
-      </Link>
+      {actionButton.action ? (
+        <Link
+          href={actionButton.action}
+          className="btn-primary px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
+        >
+          {actionButton.label}
+        </Link>
+      ) : (
+        <button
+          onClick={actionButton.onClick}
+          className={`${
+            actionButton.label === "Enroll"
+              ? "bg-blue-600 hover:bg-blue-700"
+              : "bg-red-600 hover:bg-red-700"
+          } px-4 py-2 rounded-md text-white transition duration-200`}
+        >
+          {actionButton.label}
+        </button>
+      )}
     </div>
   );
 }

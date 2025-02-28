@@ -7,6 +7,7 @@ import {
   updateCourse,
   deleteCourse,
   getStudentsByCourse,
+  enrollStudent,
 } from "../controllers/course.controller";
 import { authenticate, authorize } from "../middlewares/auth.middleware";
 
@@ -17,6 +18,7 @@ router.get("/", authenticate, getCourses);
 router.get("/lecturer/:lecturerId", authenticate, getLecturerCourses);
 router.get("/:id", authenticate, getCourseById);
 router.get("/:courseId/students", getStudentsByCourse);
+router.post("/courses/:courseId/enroll", enrollStudent);
 router.put(
   "/:id",
   authenticate,

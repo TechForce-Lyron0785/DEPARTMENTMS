@@ -5,10 +5,10 @@ import { useAuth } from "@/context/AuthContext";
 import CourseCard from "@/components/CourseCard";
 import { Course } from "@/types/course";
 import { courseService } from "../../services/course.service";
+import Link from "next/link";
 
 export default function Dashboard() {
   const { user } = useAuth();
-  console.log("user", user);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,13 +82,16 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="bg-white p-8 rounded-lg shadow text-center">
-          <p className="text-lg text-gray-600 mb-4">
+          <p className="text-lg text-gray-600 mb-8">
             You haven&apos;t been assigned to any courses yet.
           </p>
           {user?.role === "student" && (
-            <a href="/dashboard/courses/browse" className="btn-primary">
+            <Link
+              href="/dashboard/courses/"
+              className="btn-primary text-center px-6 py-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition duration-200"
+            >
               Browse Available Courses
-            </a>
+            </Link>
           )}
         </div>
       )}

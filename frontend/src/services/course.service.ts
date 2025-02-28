@@ -40,6 +40,16 @@ export const courseService = {
     return response.data;
   },
 
+  enrollStudent: async (courseId: string): Promise<ApiResponse<Course>> => {
+    const response = await axios.post(`/courses/${courseId}/enroll`);
+    return response.data;
+  },
+
+  disenrollStudent: async (courseId: string): Promise<ApiResponse<Course>> => {
+    const response = await axios.delete(`/courses/${courseId}/disenroll`);
+    return response.data;
+  },
+
   createCourse: async (
     data: CreateCourseData
   ): Promise<ApiResponse<Course>> => {

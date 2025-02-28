@@ -13,7 +13,7 @@ export const createCourse: RequestHandler = async (req, res) => {
 
 export const getCourses: RequestHandler = async (req, res) => {
   try {
-    const courses = await Course.find();
+    const courses = await Course.find().populate("lecturer", "name email");
     res.status(200).json(courses);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch courses" });
@@ -108,5 +108,57 @@ export const getStudentsByCourse: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const enrollStudent: RequestHandler = async (req, res) => {
+  const { courseId } = req.params;
+  const studentId = req.user.userId;
+
+  try {
+    // Find the course and update the students array
+    const course = await Course.findByIdAndUpdate(
+      courseId,
+      { $addToSet: { students: studentId } }, // Use $addToSet to avoid duplicates
+      { new: true } // Return the updated course
+    ).populate("lecturer", "name email"); // Populate lecturer details if needed
+
+    if (!course) {
+      res.status(404).json({ error: "Course not found" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: course,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to enroll student" });
+  }
+};
+
+export const disenrollStudent: RequestHandler = async (req, res) => {
+  const { courseId } = req.params;
+  const studentId = req.user.userId;
+
+  try {
+    // Find the course and update the students array
+    const course = await Course.findByIdAndUpdate(
+      courseId,
+      { $pull: { students: studentId } }, // Use $pull to remove the student ID
+      { new: true } // Return the updated course
+    ).populate("lecturer", "name email"); // Populate lecturer details if needed
+
+    if (!course) {
+      res.status(404).json({ error: "Course not found" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: course,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to disenroll student" });
   }
 };
