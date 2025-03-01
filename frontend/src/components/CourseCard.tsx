@@ -56,16 +56,18 @@ export default function CourseCard({ course, actionButton }: CourseCardProps) {
           {actionButton.label}
         </Link>
       ) : (
-        <button
-          onClick={actionButton.onClick}
-          className={`${
-            actionButton.label === "Enroll"
-              ? "bg-blue-600 hover:bg-blue-700"
-              : "bg-red-600 hover:bg-red-700"
-          } px-4 py-2 rounded-md text-white transition duration-200`}
-        >
-          {actionButton.label}
-        </button>
+        user?.role === "student" && (
+          <button
+            onClick={actionButton.onClick}
+            className={`${
+              actionButton.label === "Enroll"
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-red-600 hover:bg-red-700"
+            } px-4 py-2 rounded-md text-white transition duration-200`}
+          >
+            {actionButton.label}
+          </button>
+        )
       )}
     </div>
   );

@@ -19,6 +19,13 @@ export default function Navbar() {
                 Dashboard
               </Link>
             </li>
+            {user.role === "admin" && (
+              <li>
+                <Link href="/dashboard/users" className="hover:underline">
+                  Users
+                </Link>
+              </li>
+            )}
             {user.role !== "lecturer" && (
               <li>
                 <Link href="/dashboard/courses" className="hover:underline">

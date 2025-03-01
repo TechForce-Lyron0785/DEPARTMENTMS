@@ -22,7 +22,11 @@ export const createCourse: RequestHandler = async (req, res) => {
 export const getCourses: RequestHandler = async (req, res) => {
   try {
     const courses = await Course.find().populate("lecturer", "name email");
-    res.status(200).json(courses);
+    res.status(200).json({
+      success: true,
+      data: {
+        data: courses
+  }});
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch courses" });
   }

@@ -19,7 +19,7 @@ export default function CoursesPage() {
         const response = await courseService.getAllCourses();
         console.log("response", response);
 
-        setCourses(response);
+        setCourses(response.data.data);
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
@@ -46,8 +46,6 @@ export default function CoursesPage() {
       );
     } catch (err) {
       console.log("err", err);
-
-      // handleError(err);
     }
   };
 
