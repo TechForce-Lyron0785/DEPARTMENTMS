@@ -9,7 +9,7 @@ import {
   getStudentsByCourse,
   enrollStudent,
   disenrollStudent,
-  getAStudentCourses,
+  fetchStudentCourses,
 } from "../controllers/course.controller";
 import { authenticate, authorize } from "../middlewares/auth.middleware";
 
@@ -18,9 +18,9 @@ const router = express.Router();
 router.post("/", authenticate, authorize(["admin", "lecturer"]), createCourse);
 router.get("/", authenticate, getCourses);
 router.get("/lecturer/:lecturerId", authenticate, getLecturerCourses);
+router.get("/students", authenticate, fetchStudentCourses);
 router.get("/:id", authenticate, getCourseById);
 router.get("/:courseId/students", authenticate, getStudentsByCourse);
-router.get("/students", authenticate, getAStudentCourses);
 router.post("/:courseId/enroll", authenticate, enrollStudent);
 router.delete("/:courseId/disenroll", authenticate, disenrollStudent);
 router.put(

@@ -40,8 +40,8 @@ export const courseService = {
     return response.data;
   },
 
-  getAStudentCourses: async (): Promise<ApiResponse<Course[]>> => {
-    const response = await axios.get(`/courses/students`);
+  getEnrolledCourses: async (): Promise<ApiResponse<Course[]>> => {
+    const response = await axios.get("/courses/students");
     return response.data;
   },
 

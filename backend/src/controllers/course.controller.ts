@@ -118,36 +118,28 @@ export const getStudentsByCourse: RequestHandler = async (req, res) => {
   }
 };
 
-export const getAStudentCourses: RequestHandler = async (req, res) => {
-  const studentId = req.user.userId;
-  console.log("studentId", studentId);
+export const fetchStudentCourses: RequestHandler = async (req, res) => {
+  const studentId = req.user?.userId;
 
   if (!studentId) {
-    res.status(401).json({
-      success: false,
-      error: "User not authenticated",
-    });
+    res.status(401).json({ success: false, message: "Unauthorized" });
     return;
   }
 
   try {
-    const courses = await Course.find({ students: studentId })
+    const enrolledCourses = await Course.find({ students: studentId })
       .populate("lecturer", "name email")
-      .populate("materials")
       .lean();
 
-    if (!courses.length) {
-      res.status(404).json({ error: "No courses found for this student" });
+    if (!enrolledCourses.length) {
+      res.status(404).json({ message: "No courses found for this student" });
       return;
     }
 
-    res.status(200).json({
-      success: true,
-      data: courses,
-    });
+    res.status(200).json({ success: true, data: { data: enrolledCourses } });
   } catch (error) {
-    console.error("Error fetching courses:", error); // Log the error
-    res.status(500).json({ error: "Failed to fetch courses" });
+    console.error("Error fetching student courses:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

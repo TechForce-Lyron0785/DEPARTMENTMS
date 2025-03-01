@@ -19,7 +19,7 @@ export default function Dashboard() {
         if (user?.role === "lecturer") {
           response = await courseService.getLecturerCourses(user._id);
         } else if (user?.role === "student") {
-          response = await courseService.getAStudentCourses();
+          response = await courseService.getEnrolledCourses();
         } else if (user?.role === "admin") {
           response = await courseService.getAllCourses();
         }
