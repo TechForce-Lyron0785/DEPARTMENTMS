@@ -40,6 +40,11 @@ export const courseService = {
     return response.data;
   },
 
+  getAStudentCourses: async (): Promise<ApiResponse<Course[]>> => {
+    const response = await axios.get(`/courses/students`);
+    return response.data;
+  },
+
   enrollStudent: async (courseId: string): Promise<ApiResponse<Course>> => {
     const response = await axios.post(`/courses/${courseId}/enroll`);
     return response.data;

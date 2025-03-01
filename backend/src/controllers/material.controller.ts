@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { Material } from "../models/Material";
+import { Course } from "../models/Course";
 
 export const uploadMaterial: RequestHandler = async (req, res) => {
   try {
@@ -12,12 +13,18 @@ export const uploadMaterial: RequestHandler = async (req, res) => {
 
     const material = new Material({
       title: req.body.title,
-      fileUrl: file.path,
+      fileUrl: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
       courseId,
       uploadedBy: req.user?.userId,
     });
 
     await material.save();
+
+    // Update the course to include the new material
+    await Course.findByIdAndUpdate(courseId, {
+      $addToSet: { materials: material._id },
+    });
+
     res.status(201).json(material);
   } catch (error) {
     res.status(500).json({ error: "Failed to upload material" });

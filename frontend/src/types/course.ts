@@ -6,16 +6,17 @@ export interface Course {
   title: string;
   courseCode: string;
   description: string;
-  lecturer: string | User;
-  students: string[] | User[];
-  materials: string[] | Material[];
-  createdAt: string;
-  updatedAt: string;
+  lecturer?: string | User;
+  students?: string[] | User[];
+  materials?: string[] | Material[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreateCourseData {
   title: string;
   description: string;
+  courseCode: string;
   lecturer: string; // Lecturer ID
 }
 

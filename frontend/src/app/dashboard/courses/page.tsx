@@ -73,8 +73,9 @@ export default function CoursesPage() {
   const filteredCourses = courses.filter(
     (course) =>
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.courseCode.toLowerCase().includes(searchTerm.toLowerCase())
-    // || course.lecturer.toLowerCase().includes(searchTerm.toLowerCase())
+      course.courseCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.lecturer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ""
   );
 
   return (

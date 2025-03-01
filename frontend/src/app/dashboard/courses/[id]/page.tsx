@@ -91,13 +91,13 @@ export default function CourseDetailsPage() {
           {user?.role === "lecturer" && (
             <div className="mb-4">
               <Link
-                href={`/dashboard/courses/${course.id}/edit`}
+                href={`/dashboard/courses/${course._id}/edit`}
                 className="btn-secondary mr-2 px-4 py-2 rounded-md bg-yellow-600 text-white hover:bg-yellow-700 transition duration-200"
               >
                 Edit Course
               </Link>
               <Link
-                href={`/dashboard/courses/${course.id}/materials/upload`}
+                href={`/dashboard/courses/${course._id}/materials/upload`}
                 className="btn-primary px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
               >
                 Upload New Material
@@ -170,7 +170,10 @@ export default function CourseDetailsPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {formatDate(material.uploadedAt)}
+                            {(material.uploadedAt &&
+                              formatDate(material.uploadedAt)) ||
+                              (material.updatedAt &&
+                                formatDate(material.updatedAt))}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <a

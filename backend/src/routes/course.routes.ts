@@ -8,6 +8,8 @@ import {
   deleteCourse,
   getStudentsByCourse,
   enrollStudent,
+  disenrollStudent,
+  getAStudentCourses,
 } from "../controllers/course.controller";
 import { authenticate, authorize } from "../middlewares/auth.middleware";
 
@@ -17,8 +19,10 @@ router.post("/", authenticate, authorize(["admin", "lecturer"]), createCourse);
 router.get("/", authenticate, getCourses);
 router.get("/lecturer/:lecturerId", authenticate, getLecturerCourses);
 router.get("/:id", authenticate, getCourseById);
-router.get("/:courseId/students", getStudentsByCourse);
-router.post("/courses/:courseId/enroll", enrollStudent);
+router.get("/:courseId/students", authenticate, getStudentsByCourse);
+router.get("/students", authenticate, getAStudentCourses);
+router.post("/:courseId/enroll", authenticate, enrollStudent);
+router.delete("/:courseId/disenroll", authenticate, disenrollStudent);
 router.put(
   "/:id",
   authenticate,

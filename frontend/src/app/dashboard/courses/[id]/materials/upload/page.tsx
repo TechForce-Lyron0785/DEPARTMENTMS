@@ -4,22 +4,21 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
+import { materialService } from "@/services/material.service";
 
 export default function UploadMaterialPage() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const router = useRouter();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
-    type: "lecture",
   });
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Check if user is a lecturer
-  if (user?.role !== "lecturer") {
+  if (user?.role === "student") {
     router.push("/dashboard");
     return null;
   }
@@ -30,7 +29,7 @@ export default function UploadMaterialPage() {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...(prev || {}), [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,16 +50,19 @@ export default function UploadMaterialPage() {
     }
 
     try {
-      // In a real app, this would be a FormData upload to your API
-      // const formData = new FormData();
-      // formData.append('title', formData.title);
-      // formData.append('description', formData.description);
-      // formData.append('type', formData.type);
-      // formData.append('file', file);
+      const data = {
+        title: formData.title,
+        courseId: id,
+        file: file,
+        uploadedBy: user?._id,
+        uploadedAt: Date(),
+      };
 
-      // Simulate API request
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Call the uploadMaterial service
+      const response = await materialService.uploadMaterial(id, data);
+      console.log(response);
 
+      // Redirect to the course materials page after successful upload
       router.push(`/dashboard/courses/${id}`);
     } catch (err) {
       setError("Failed to upload material. Please try again.");
@@ -101,40 +103,6 @@ export default function UploadMaterialPage() {
             />
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="description" className="form-label">
-              Description (Optional)
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              rows={5}
-              className="form-input border rounded-md p-2 w-full mt-2"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Brief description of the material content"
-            ></textarea>
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="type" className="form-label">
-              Material Type
-            </label>
-            <select
-              id="type"
-              name="type"
-              className="form-input border rounded-md p-2 w-full mt-2"
-              value={formData.type}
-              onChange={handleChange}
-            >
-              <option value="lecture">Lecture Notes</option>
-              <option value="assignment">Assignment</option>
-              <option value="reading">Required Reading</option>
-              <option value="quiz">Quiz</option>
-              <option value="resource">Additional Resource</option>
-            </select>
-          </div>
-
           <div className="mb-6">
             <label htmlFor="file" className="form-label">
               Upload File
@@ -172,7 +140,7 @@ export default function UploadMaterialPage() {
                   <p className="pl-1">or drag and drop</p>
                 </div>
                 <p className="text-xs text-gray-500">
-                  PDF, PPT, DOC, ZIP up to 50MB
+                  PDF, PPT, DOC, ZIP up to 10MB
                 </p>
                 {file && (
                   <p className="text-sm text-green-600 mt-2">

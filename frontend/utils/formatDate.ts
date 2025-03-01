@@ -1,4 +1,4 @@
-export const formatDate = (date: number | Date) => {
+export const formatDate = (date: number | Date | string) => {
   // Ensure the input is a valid Date object
   const formattedDate = new Date(date);
 

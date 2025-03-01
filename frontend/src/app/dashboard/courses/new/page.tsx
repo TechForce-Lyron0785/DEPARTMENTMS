@@ -13,8 +13,9 @@ export default function CreateCoursePage() {
   const { error, handleError, clearError } = useApiError();
   const [formData, setFormData] = useState({
     title: "",
-    code: "",
+    courseCode: "",
     description: "",
+    lecturer: user!._id,
   });
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -43,11 +44,12 @@ export default function CreateCoursePage() {
     try {
       // Call the createCourse service
       const response = await courseService.createCourse(formData);
-      setSuccessMessage("Course created successfully!"); // Set success message
-      console.log(response); // Log the response for debugging
-      router.push("/dashboard/courses"); // Redirect to the courses dashboard
+      console.log("response", response);
+
+      setSuccessMessage("Course created successfully!");
+      router.push("/dashboard");
     } catch (err) {
-      handleError(err); // Handle any errors
+      handleError(err);
     } finally {
       setLoading(false);
     }
@@ -93,16 +95,16 @@ export default function CreateCoursePage() {
             </div>
 
             <div>
-              <label htmlFor="code" className="form-label">
+              <label htmlFor="courseCode" className="form-label">
                 Course Code
               </label>
               <input
-                id="code"
-                name="code"
+                id="courseCode"
+                name="courseCode"
                 type="text"
                 required
                 className="form-input border rounded-md p-2 w-full mt-2"
-                value={formData.code}
+                value={formData.courseCode}
                 onChange={handleChange}
                 placeholder="e.g., CS101"
               />

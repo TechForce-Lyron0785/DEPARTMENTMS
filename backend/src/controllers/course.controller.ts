@@ -1,6 +1,14 @@
 import { RequestHandler } from "express";
 import { Course } from "../models/Course";
 
+// Add this interface at the top of the file
+interface AuthenticatedRequest extends Request {
+  user: {
+    userId: string;
+    role: string;
+  };
+}
+
 export const createCourse: RequestHandler = async (req, res) => {
   try {
     const course = new Course(req.body);
@@ -90,15 +98,14 @@ export const deleteCourse: RequestHandler = async (req, res) => {
   }
 };
 
-export const getStudentsByCourse: RequestHandler = async (req, res, next) => {
-  try {
-    const { courseId } = req.params;
+export const getStudentsByCourse: RequestHandler = async (req, res) => {
+  const { courseId } = req.params;
 
-    // Find the course and populate the students
+  try {
     const course = await Course.findById(courseId).populate("students");
 
     if (!course) {
-      res.status(404).json({ success: false, message: "Course not found" });
+      res.status(404).json({ error: "Course not found" });
       return;
     }
 
@@ -107,7 +114,40 @@ export const getStudentsByCourse: RequestHandler = async (req, res, next) => {
       data: course.students,
     });
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: "Failed to fetch students" });
+  }
+};
+
+export const getAStudentCourses: RequestHandler = async (req, res) => {
+  const studentId = req.user.userId;
+  console.log("studentId", studentId);
+
+  if (!studentId) {
+    res.status(401).json({
+      success: false,
+      error: "User not authenticated",
+    });
+    return;
+  }
+
+  try {
+    const courses = await Course.find({ students: studentId })
+      .populate("lecturer", "name email")
+      .populate("materials")
+      .lean();
+
+    if (!courses.length) {
+      res.status(404).json({ error: "No courses found for this student" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: courses,
+    });
+  } catch (error) {
+    console.error("Error fetching courses:", error); // Log the error
+    res.status(500).json({ error: "Failed to fetch courses" });
   }
 };
 

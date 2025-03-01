@@ -15,7 +15,14 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await courseService.getLecturerCourses(user!._id);
+        let response;
+        if (user?.role === "lecturer") {
+          response = await courseService.getLecturerCourses(user._id);
+        } else if (user?.role === "student") {
+          response = await courseService.getAStudentCourses();
+        } else if (user?.role === "admin") {
+          response = await courseService.getAllCourses();
+        }
         setCourses(response.data.data);
       } catch (error) {
         console.error("Error fetching courses:", error);

@@ -18,6 +18,7 @@ export const materialService = {
   },
 
   uploadMaterial: async (
+    courseId: string,
     data: CreateMaterialData
   ): Promise<ApiResponse<Material>> => {
     const formData = new FormData();
@@ -25,7 +26,7 @@ export const materialService = {
       formData.append(key, value instanceof File ? value : String(value));
     });
 
-    const response = await axios.post("/materials", formData, {
+    const response = await axios.post(`/materials/${courseId}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
