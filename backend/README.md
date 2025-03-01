@@ -56,6 +56,7 @@ backend/
 
 - `POST /api/auth/signup` - Register a new user
 - `POST /api/auth/login` - Login user
+- `POST /api/auth/verifyToken` - Verifies a user auth token
 
 ### Users
 
@@ -64,11 +65,18 @@ backend/
 
 ### Courses
 
-- `POST /api/courses` - Create a new course (Admin/Lecturer)
 - `GET /api/courses` - Get all courses
 - `GET /api/courses/:id` - Get course by ID
 - `PUT /api/courses/:id` - Update course (Admin/Lecturer)
-- `DELETE /api/courses/:id` - Delete course (Admin)
+- `GET /api/courses/students` - Get all courses taken by the student
+- `GET /api/courses/:courseId/students` - Get all students enrolled in a specific course
+
+- `POST /api/courses` - Create a new course (Admin/Lecturer)
+- `POST /api/courses/:courseId/enroll` - Enroll the authenticated student in a course
+
+- `DELETE /api/courses/:id` - Delete course (Admin/Lecturer)
+- `DELETE /api/courses/:id` - Delete course (Admin/Lecturer)
+- `DELETE /api/courses/:courseId/disenroll` - Disenroll the authenticated student from a course
 
 ### Materials
 
