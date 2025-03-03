@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { authService } from "@/services/auth.service";
 import { User } from "@/types/user";
+import { toast } from "react-toastify";
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -42,7 +43,7 @@ export default function ProfilePage() {
       const response = await authService.updateUser(user!._id, formData);
       setUser((prevData) => ({ ...prevData, ...formData }));
       if (response.success) {
-        alert("successfully updated profile");
+        toast.success("successfully updated profile");
       }
       console.log(response);
     } catch (err) {
@@ -70,11 +71,9 @@ export default function ProfilePage() {
               <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 text-4xl mb-4">
                 {user?.name?.charAt(0) || "U"}
               </div>
-              <h2 className="text-xl font-bold">{user?.name}</h2>
-              <p className="text-gray-600">
-                {user?.role === "lecturer" ? "Lecturer" : "Student"}
-              </p>
-              <p className="text-gray-500 mt-1">{user?.email}</p>
+              <h2 className="text-xl font-bold">Name: {user?.name}</h2>
+              <p className="text-gray-600">Role: {user?.role}</p>
+              <p className="text-gray-500 mt-1">Email: {user?.email}</p>
             </div>
           </div>
 

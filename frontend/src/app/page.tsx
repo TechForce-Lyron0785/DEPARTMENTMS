@@ -25,7 +25,7 @@ export default function Home() {
                   Get Started
                 </Link>
                 <Link
-                  href="/about"
+                  href="/"
                   className="text-white btn text-center border border-white px-6 py-3 rounded-md transition duration-200"
                 >
                   Learn More

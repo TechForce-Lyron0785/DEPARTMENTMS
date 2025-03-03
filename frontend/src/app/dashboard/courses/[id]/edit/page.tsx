@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { courseService } from "@/services/course.service";
 import { useApiError } from "@/hooks/useApiError";
+import { toast } from "react-toastify";
 
 export default function EditCoursePage() {
   const { user } = useAuth();
@@ -63,6 +64,7 @@ export default function EditCoursePage() {
       console.log("Updated Course Data:", response);
       // Redirect to the course details page after saving
       router.push(`/dashboard/courses/${id}`);
+      toast.success("Course has been successfully edited!");
     } catch (err) {
       handleError(err);
     } finally {

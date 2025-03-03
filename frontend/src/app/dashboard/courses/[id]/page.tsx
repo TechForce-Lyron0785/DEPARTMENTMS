@@ -7,6 +7,7 @@ import { materialService } from "@/services/material.service";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { formatDate } from "../../../../../utils/formatDate";
+import { toast } from "react-toastify";
 
 export default function CourseDetailsPage() {
   const { id } = useParams();
@@ -50,6 +51,7 @@ export default function CourseDetailsPage() {
   const handleDeleteMaterial = async (materialId) => {
     try {
       await materialService.deleteMaterial(materialId);
+      toast.info("Course has been successfully deleted!");
       setMaterials((prev) => prev.filter((m) => m._id !== materialId));
     } catch (err) {
       setError("Failed to delete material.");

@@ -6,6 +6,7 @@ import CourseCard from "@/components/CourseCard";
 import { Course } from "@/types/course";
 // import Link from "next/link";
 import { courseService } from "@/services/course.service";
+import { toast } from "react-toastify";
 
 export default function CoursesPage() {
   const { user } = useAuth();
@@ -35,6 +36,7 @@ export default function CoursesPage() {
   const handleEnroll = async (courseId: string) => {
     try {
       const response = await courseService.enrollStudent(courseId); // Call the enroll endpoint
+      toast.success("Course enrolled successfully");
       console.log("Enrollment response:", response);
       // Optionally, you can update the local state to reflect the enrollment
       setCourses((prevCourses) =>
@@ -52,6 +54,7 @@ export default function CoursesPage() {
   const handleDisenroll = async (courseId: string) => {
     try {
       const response = await courseService.disenrollStudent(courseId);
+      toast.info("Course disenrolled successfully");
       console.log("Disenrollment response:", response);
       setCourses((prevCourses) =>
         prevCourses.map((course) =>

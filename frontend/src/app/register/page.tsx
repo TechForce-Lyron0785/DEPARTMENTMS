@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function Register() {
     try {
       await register(formData);
       router.push("/dashboard");
-      console.log("account created succesfully...");
+      toast.success("Account created succesfully 🎉🎉🎉 ");
     } catch (err) {
       setError("Failed to create an account. Please try again.");
       console.error(err);

@@ -6,6 +6,7 @@ import CourseCard from "@/components/CourseCard";
 import { Course } from "@/types/course";
 import { courseService } from "../../services/course.service";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ export default function Dashboard() {
         }
         setCourses(response.data.data);
       } catch (error) {
+        toast.error("Error fetching courses");
         console.error("Error fetching courses:", error);
       } finally {
         setLoading(false);

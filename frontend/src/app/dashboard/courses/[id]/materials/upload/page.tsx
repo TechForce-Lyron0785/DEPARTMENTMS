@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { materialService } from "@/services/material.service";
+import { toast } from "react-toastify";
 
 export default function UploadMaterialPage() {
   const { id } = useParams() as { id: string };
@@ -64,6 +65,7 @@ export default function UploadMaterialPage() {
 
       // Redirect to the course materials page after successful upload
       router.push(`/dashboard/courses/${id}`);
+      toast.success("Material has been successfully uploaded!");
     } catch (err) {
       setError("Failed to upload material. Please try again.");
       console.error(err);

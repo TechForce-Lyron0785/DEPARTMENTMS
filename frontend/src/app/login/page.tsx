@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useApiError } from "@/hooks/useApiError";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function Login() {
     try {
       await login(formData.email, formData.password);
       router.push("/dashboard");
+      toast.success("Login successful.");
     } catch (err) {
       handleError(err);
     } finally {

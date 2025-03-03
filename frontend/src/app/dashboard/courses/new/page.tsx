@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { courseService } from "@/services/course.service";
 import { useApiError } from "@/hooks/useApiError";
+import { toast } from "react-toastify";
 
 export default function CreateCoursePage() {
   const router = useRouter();
@@ -18,7 +19,6 @@ export default function CreateCoursePage() {
     lecturer: user!._id,
   });
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
 
   // Check if user is a lecturer
   if (user?.role !== "lecturer") {
@@ -39,14 +39,13 @@ export default function CreateCoursePage() {
     e.preventDefault();
     clearError();
     setLoading(true);
-    setSuccessMessage("");
 
     try {
       // Call the createCourse service
       const response = await courseService.createCourse(formData);
       console.log("response", response);
+      toast.success("Course created successfully!");
 
-      setSuccessMessage("Course created successfully!");
       router.push("/dashboard");
     } catch (err) {
       handleError(err);
@@ -69,11 +68,6 @@ export default function CreateCoursePage() {
           {error && (
             <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
               {error}
-            </div>
-          )}
-          {successMessage && (
-            <div className="bg-green-50 text-green-500 p-3 rounded-md mb-4">
-              {successMessage}
             </div>
           )}
 
