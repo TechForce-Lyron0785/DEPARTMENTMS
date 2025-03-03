@@ -43,13 +43,23 @@ export const getMaterialsByCourse: RequestHandler = async (req, res) => {
 
 export const deleteMaterial: RequestHandler = async (req, res) => {
   try {
-    const material = await Material.findByIdAndDelete(req.params.id);
+    const materialId = req.params.id;
+
+    // Find and delete the material
+    const material = await Material.findByIdAndDelete(materialId);
     if (!material) {
       res.status(404).json({ error: "Material not found" });
       return;
     }
+
+    // Update the course to remove the deleted material
+    await Course.findByIdAndUpdate(material.courseId, {
+      $pull: { materials: materialId },
+    });
+
     res.status(200).json({ message: "Material deleted successfully" });
   } catch (error) {
+    console.error("Error deleting material:", error);
     res.status(500).json({ error: "Failed to delete material" });
   }
 };
