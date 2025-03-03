@@ -51,7 +51,7 @@ export default function CourseDetailsPage() {
   const handleDeleteMaterial = async (materialId) => {
     try {
       await materialService.deleteMaterial(materialId);
-      toast.info("Course has been successfully deleted!");
+      toast.info("Material has been successfully deleted!");
       setMaterials((prev) => prev.filter((m) => m._id !== materialId));
     } catch (err) {
       setError("Failed to delete material.");
@@ -209,7 +209,7 @@ export default function CourseDetailsPage() {
                   {user?.role === "lecturer" && (
                     <Link
                       href={`/dashboard/courses/${course?._id}/materials/upload`}
-                      className="btn-primary"
+                      className="btn-primary px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
                     >
                       Upload First Material
                     </Link>

@@ -49,9 +49,12 @@ export default function Dashboard() {
         </div>
 
         {user?.role === "lecturer" && (
-          <a href="/dashboard/courses/new" className="btn-primary">
+          <Link
+            href="/dashboard/courses/new"
+            className="btn-primary px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
+          >
             Create New Course
-          </a>
+          </Link>
         )}
       </div>
 
@@ -91,9 +94,19 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="bg-white p-8 rounded-lg shadow text-center">
-          <p className="text-lg text-gray-600 mb-8">
-            You haven&apos;t been assigned to any courses yet.
-          </p>
+          {user?.role === "student" ? (
+            <p className="text-lg text-gray-600 mb-8">
+              You haven&apos;t been assigned to any courses yet.
+            </p>
+          ) : user?.role === "lecturer" ? (
+            <p className="text-lg text-gray-600 mb-8">
+              You haven&apos;t created any courses yet.
+            </p>
+          ) : user?.role === "admin" ? (
+            <p className="text-lg text-gray-600 mb-8">
+              There are no courses created yet.
+            </p>
+          ) : null}
           {user?.role === "student" && (
             <Link
               href="/dashboard/courses/"

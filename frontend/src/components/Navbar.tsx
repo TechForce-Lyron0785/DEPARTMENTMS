@@ -26,7 +26,7 @@ export default function Navbar() {
                 </Link>
               </li>
             )}
-            {user.role !== "lecturer" && (
+            {user.role !== "admin" && (
               <li>
                 <Link href="/dashboard/courses" className="hover:underline">
                   Courses
