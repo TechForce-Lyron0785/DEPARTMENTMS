@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Course } from "@/types/course";
@@ -27,14 +26,14 @@ export default function EditCoursePage() {
     const fetchCourse = async () => {
       try {
         const response = await courseService.getCourseById(id as string);
-        console.log(response);
+        const courseData = response.data;
 
-        setCourse(response);
+        setCourse(courseData);
         setFormData((prevData) => ({
           ...prevData,
-          title: response.title,
-          courseCode: response.courseCode,
-          description: response.description,
+          title: courseData?.title,
+          courseCode: courseData?.courseCode,
+          description: courseData?.description,
         }));
       } catch (err) {
         handleError(err);
