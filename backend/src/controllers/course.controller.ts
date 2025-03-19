@@ -1,35 +1,27 @@
 import { RequestHandler } from "express";
 import { Course } from "../models/Course";
-
-// Add this interface at the top of the file
-interface AuthenticatedRequest extends Request {
-  user: {
-    userId: string;
-    role: string;
-  };
-}
+import { sendResponse } from "../utils/responseHandler";
 
 export const createCourse: RequestHandler = async (req, res) => {
   try {
     const course = new Course(req.body);
     await course.save();
-    res.status(201).json(course);
+    sendResponse(res, 201, true, "Course created successfully", course);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to create course" });
+    sendResponse(res, 500, false, "Failed to create course", null);
+    return;
   }
 };
 
 export const getCourses: RequestHandler = async (req, res) => {
   try {
     const courses = await Course.find().populate("lecturer", "name email");
-    res.status(200).json({
-      success: true,
-      data: {
-        data: courses,
-      },
-    });
+    sendResponse(res, 200, true, "Courses fetched successfully", courses);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch courses" });
+    sendResponse(res, 500, false, "Failed to fetch courses", null);
+    return;
   }
 };
 
@@ -47,16 +39,14 @@ export const getLecturerCourses: RequestHandler = async (req, res, next) => {
 
     const total = await Course.countDocuments({ lecturer: lecturerId });
 
-    res.status(200).json({
-      success: true,
-      data: {
-        data: courses,
-        total,
-        page: Number(page),
-        limit: Number(limit),
-        totalPages: Math.ceil(total / Number(limit)),
-      },
-    });
+    sendResponse(
+      res,
+      200,
+      true,
+      "Lecturer courses fetched successfully",
+      courses
+    );
+    return;
   } catch (error) {
     next(error);
   }
@@ -66,12 +56,14 @@ export const getCourseById: RequestHandler = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
     if (!course) {
-      res.status(404).json({ error: "Course not found" });
+      sendResponse(res, 404, false, "Course not found", null);
       return;
     }
-    res.status(200).json(course);
+    sendResponse(res, 200, true, "Course fetched successfully", course);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch course" });
+    sendResponse(res, 500, false, "Failed to fetch course", null);
+    return;
   }
 };
 
@@ -81,12 +73,14 @@ export const updateCourse: RequestHandler = async (req, res) => {
       new: true,
     });
     if (!course) {
-      res.status(404).json({ error: "Course not found" });
+      sendResponse(res, 404, false, "Course not found", null);
       return;
     }
-    res.status(200).json(course);
+    sendResponse(res, 200, true, "Course updated successfully", course);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to update course" });
+    sendResponse(res, 500, false, "Failed to update course", null);
+    return;
   }
 };
 
@@ -94,32 +88,36 @@ export const deleteCourse: RequestHandler = async (req, res) => {
   try {
     const course = await Course.findByIdAndDelete(req.params.id);
     if (!course) {
-      res.status(404).json({ error: "Course not found" });
+      sendResponse(res, 404, false, "Course not found", null);
       return;
     }
-    res.status(200).json({ message: "Course deleted successfully" });
+    sendResponse(res, 200, true, "Course deleted successfully", null);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete course" });
+    sendResponse(res, 500, false, "Failed to delete course", null);
+    return;
   }
 };
 
 export const getStudentsByCourse: RequestHandler = async (req, res) => {
   const { courseId } = req.params;
-
   try {
     const course = await Course.findById(courseId).populate("students");
-
     if (!course) {
-      res.status(404).json({ error: "Course not found" });
+      sendResponse(res, 404, false, "Course not found", null);
       return;
     }
-
-    res.status(200).json({
-      success: true,
-      data: course.students,
-    });
+    sendResponse(
+      res,
+      200,
+      true,
+      "Students fetched successfully",
+      course.students
+    );
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch students" });
+    sendResponse(res, 500, false, "Failed to fetch students", null);
+    return;
   }
 };
 
@@ -127,7 +125,7 @@ export const fetchStudentCourses: RequestHandler = async (req, res) => {
   const studentId = req.user?.userId;
 
   if (!studentId) {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+    sendResponse(res, 401, false, "Unauthorized", null);
     return;
   }
 
@@ -137,14 +135,22 @@ export const fetchStudentCourses: RequestHandler = async (req, res) => {
       .lean();
 
     if (!enrolledCourses.length) {
-      res.status(404).json({ message: "No courses found for this student" });
+      sendResponse(res, 404, false, "No courses found for this student", null);
       return;
     }
 
-    res.status(200).json({ success: true, data: { data: enrolledCourses } });
+    sendResponse(
+      res,
+      200,
+      true,
+      "Student Courses retrieve successfully",
+      enrolledCourses
+    );
+    return;
   } catch (error) {
     console.error("Error fetching student courses:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    sendResponse(res, 500, false, "Internal Server Error", null);
+    return;
   }
 };
 
@@ -153,24 +159,21 @@ export const enrollStudent: RequestHandler = async (req, res) => {
   const studentId = req.user.userId;
 
   try {
-    // Find the course and update the students array
     const course = await Course.findByIdAndUpdate(
       courseId,
-      { $addToSet: { students: studentId } }, // Use $addToSet to avoid duplicates
-      { new: true } // Return the updated course
-    ).populate("lecturer", "name email"); // Populate lecturer details if needed
+      { $addToSet: { students: studentId } },
+      { new: true }
+    ).populate("lecturer", "name email");
 
     if (!course) {
-      res.status(404).json({ error: "Course not found" });
+      sendResponse(res, 404, false, "Course not found", null);
       return;
     }
-
-    res.status(200).json({
-      success: true,
-      data: course,
-    });
+    sendResponse(res, 200, true, "Student enrolled successfully", course);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to enroll student" });
+    sendResponse(res, 500, false, "Failed to enroll student", null);
+    return;
   }
 };
 
@@ -182,20 +185,20 @@ export const disenrollStudent: RequestHandler = async (req, res) => {
     // Find the course and update the students array
     const course = await Course.findByIdAndUpdate(
       courseId,
-      { $pull: { students: studentId } }, // Use $pull to remove the student ID
+      { $pull: { students: studentId } },
       { new: true } // Return the updated course
-    ).populate("lecturer", "name email"); // Populate lecturer details if needed
+    ).populate("lecturer", "name email");
 
     if (!course) {
-      res.status(404).json({ error: "Course not found" });
+      sendResponse(res, 404, true, "Course not found", null);
       return;
     }
 
-    res.status(200).json({
-      success: true,
-      data: course,
-    });
+    sendResponse(res, 200, true, "Disenroll Successfull", course);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to disenroll student" });
+    console.log(error);
+    sendResponse(res, 500, true, "Failed to disenroll student", null);
+    return;
   }
 };

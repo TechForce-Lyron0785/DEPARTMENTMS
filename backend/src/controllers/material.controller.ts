@@ -1,19 +1,20 @@
 import { RequestHandler } from "express";
 import { Material } from "../models/Material";
 import { Course } from "../models/Course";
+import { sendResponse } from "../utils/responseHandler";
 
 export const uploadMaterial: RequestHandler = async (req, res) => {
   try {
     const { courseId } = req.params;
     const file = req.file;
     if (!file) {
-      res.status(400).json({ error: "No file uploaded" });
+      sendResponse(res, 400, false, "No file uploaded", null);
       return;
     }
 
     const material = new Material({
       title: req.body.title,
-      fileUrl: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
+      fileUrl: req.file?.path,
       courseId,
       uploadedBy: req.user?.userId,
     });
@@ -25,9 +26,9 @@ export const uploadMaterial: RequestHandler = async (req, res) => {
       $addToSet: { materials: material._id },
     });
 
-    res.status(201).json(material);
+    sendResponse(res, 201, true, "Material uploaded successfully", material);
   } catch (error) {
-    res.status(500).json({ error: "Failed to upload material" });
+    sendResponse(res, 500, false, "Failed to upload material", null);
   }
 };
 
@@ -35,9 +36,9 @@ export const getMaterialsByCourse: RequestHandler = async (req, res) => {
   try {
     const { courseId } = req.params;
     const materials = await Material.find({ courseId });
-    res.status(200).json(materials);
+    sendResponse(res, 200, true, "Materials fetched successfully", materials);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch materials" });
+    sendResponse(res, 500, false, "Failed to fetch materials", null);
   }
 };
 
@@ -48,7 +49,7 @@ export const deleteMaterial: RequestHandler = async (req, res) => {
     // Find and delete the material
     const material = await Material.findByIdAndDelete(materialId);
     if (!material) {
-      res.status(404).json({ error: "Material not found" });
+      sendResponse(res, 404, false, "Material not found", null);
       return;
     }
 
@@ -57,9 +58,11 @@ export const deleteMaterial: RequestHandler = async (req, res) => {
       $pull: { materials: materialId },
     });
 
-    res.status(200).json({ message: "Material deleted successfully" });
+    sendResponse(res, 200, true, "Material deleted successfully", null);
+    return;
   } catch (error) {
     console.error("Error deleting material:", error);
-    res.status(500).json({ error: "Failed to delete material" });
+    sendResponse(res, 500, false, "Material deleted successfully", null);
+    return;
   }
 };

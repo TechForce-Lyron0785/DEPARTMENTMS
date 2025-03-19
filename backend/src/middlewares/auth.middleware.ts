@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { sendResponse } from "../utils/responseHandler";
 
 interface TokenPayload {
   userId: string;
@@ -13,7 +14,7 @@ export const authenticate = async (
 ) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
-    res.status(401).json({ error: "Unauthorized" });
+    sendResponse(res, 401, true, "Unauthorized", null);
     return;
   }
 
@@ -25,7 +26,7 @@ export const authenticate = async (
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ error: "Invalid token" });
+    sendResponse(res, 401, true, "Invalid token", null);
     return;
   }
 };
@@ -33,7 +34,7 @@ export const authenticate = async (
 export const authorize = (roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
-      res.status(403).json({ error: "Forbidden" });
+      sendResponse(res, 403, true, "Forbidden", null);
       return;
     }
     next();

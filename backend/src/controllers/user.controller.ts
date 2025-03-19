@@ -1,12 +1,15 @@
 import { RequestHandler } from "express";
 import { User } from "../models/User";
+import { sendResponse } from "../utils/responseHandler";
 
 export const getAllUsers: RequestHandler = async (req, res) => {
   try {
     const users = await User.find().select("-password");
-    res.status(200).json(users);
+    sendResponse(res, 200, true, "Users fetched successfully", users);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch users" });
+    sendResponse(res, 500, false, "Failed to fetch users", null);
+    return;
   }
 };
 
@@ -14,12 +17,14 @@ export const getUserById: RequestHandler = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
     if (!user) {
-      res.status(404).json({ error: "User not found" });
+      sendResponse(res, 404, false, "User not found", null);
       return;
     }
-    res.status(200).json(user);
+    sendResponse(res, 200, true, "User fetched successfully", user);
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch user" });
+    sendResponse(res, 500, false, "Failed to fetch user", null);
+    return;
   }
 };
 
@@ -35,12 +40,14 @@ export const updateUser: RequestHandler = async (req, res) => {
     );
 
     if (!updatedUser) {
-      res.status(404).json({ success: false, message: "User not found" });
+      sendResponse(res, 404, false, "User not found", null);
       return;
     }
 
-    res.status(200).json({ success: true, data: updatedUser });
+    sendResponse(res, 200, true, "User successfully updated", updatedUser);
+    return;
   } catch (error) {
-    res.status(500).json({ success: false, error: "Server error" });
+    sendResponse(res, 500, false, "Server error", null);
+    return;
   }
 };

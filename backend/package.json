@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon src/app.ts",
     "start": "node dist/app.js",
+    "build": "tsc",
     "create-admin": "ts-node src/utils/createAdmin.ts",
     "seed-db": "ts-node src/utils/seedDatabase.ts",
     "clear-db": "ts-node src/utils/clearDatabase.ts",
@@ -31,6 +32,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^1.4.12",
     "nodemon": "^3.1.9",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
   }
 }

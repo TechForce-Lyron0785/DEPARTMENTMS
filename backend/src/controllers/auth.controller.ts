@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { User } from "../models/User";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { sendResponse } from "../utils/responseHandler";
 
 type AsyncRequestHandler = (
   req: Request,
@@ -16,7 +17,8 @@ export const registerUser: AsyncRequestHandler = async (req, res, next) => {
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+      sendResponse(res, 400, false, "User already exists", null);
+      return;
     }
 
     // Hash the password and create the user
@@ -24,62 +26,69 @@ export const registerUser: AsyncRequestHandler = async (req, res, next) => {
     const newUser = new User({ name, email, password: hashedPassword, role });
     await newUser.save();
 
-    return res.status(201).json({ message: "User registered successfully" });
+    sendResponse(res, 201, false, "User registered successfully", null);
+    return;
   } catch (error) {
     next(error);
   }
 };
 
-export const loginUser: AsyncRequestHandler = async (req, res, next) => {
+export const loginUser: AsyncRequestHandler = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const user = await User.findOne({ email }).select("+password");
 
-    // Find user in the database
-    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: "Invalid credentials" });
+      sendResponse(res, 404, false, "User not found", null);
+      return;
     }
 
-    // Compare password
     const isMatch = await comparePassword(password, user.password);
+
     if (!isMatch) {
-      return res.status(400).json({ error: "Invalid credentials" });
+      sendResponse(res, 401, false, "Invalid credentials", null);
+      return;
     }
 
-    // Generate JWT token
-    const payload = { userId: user._id, role: user.role };
-    const token = generateToken(payload);
+    const userObject = user.toObject();
+    delete userObject.password;
+    const token = generateToken(userObject);
 
-    return res.status(200).json({ token, user });
+    sendResponse(res, 200, true, "Login successful", {
+      user: userObject,
+      token,
+    });
+    return;
   } catch (error) {
-    next(error);
+    console.error("Login error:", error);
+    return sendResponse(res, 500, false, "Login failed", null);
   }
 };
 
 export const verifyToken: AsyncRequestHandler = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Get the token from the Authorization header
+  const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
-    return res
-      .status(401)
-      .json({ success: false, message: "No token provided" });
+    sendResponse(res, 401, false, "No token provided", null);
+    return;
   }
 
   try {
     // Verify the token using your secret key
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload; // Assert the type to JwtPayload
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
 
     // Fetch the user from the database using the ID from the decoded token
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      sendResponse(res, 404, false, "User not found", null);
+      return;
     }
 
     // Return the user data
-    res.status(200).json({ success: true, user });
+    sendResponse(res, 200, true, "User found", user);
+    return;
   } catch (error) {
-    return res.status(401).json({ success: false, message: "Invalid token" });
+    sendResponse(res, 401, false, "Invalid token", null);
+    return;
   }
 };

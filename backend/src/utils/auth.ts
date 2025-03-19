@@ -26,11 +26,18 @@ export const comparePassword = async (
 
 /**
  * Generate a JWT token for authentication
- * @param payload - The data to be signed into the token
+ * @param user - The user object to be signed into the token
  * @returns A signed JWT token
  */
-export const generateToken = (payload: object): string => {
-  const secret = process.env.JWT_SECRET;
-  const expiresIn = "7d"; // Token expiry
-  return jwt.sign(payload, secret, { expiresIn });
+export const generateToken = (user: any) => {
+  // Create a payload with only the necessary user information
+  const payload = {
+    userId: user._id,
+    email: user.email,
+    role: user.role,
+  };
+
+  return jwt.sign(payload, process.env.JWT_SECRET as string, {
+    expiresIn: "7d", // or whatever duration you prefer
+  });
 };
