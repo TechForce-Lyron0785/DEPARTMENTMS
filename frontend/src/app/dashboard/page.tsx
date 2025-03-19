@@ -6,12 +6,14 @@ import CourseCard from "@/components/CourseCard";
 import { Course } from "@/types/course";
 import { courseService } from "../../services/course.service";
 import Link from "next/link";
+import { useApiError } from "@/hooks/useApiError";
 import { toast } from "react-toastify";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const { error, handleError } = useApiError();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -24,10 +26,12 @@ export default function Dashboard() {
         } else if (user?.role === "admin") {
           response = await courseService.getAllCourses();
         }
-        setCourses(response.data.data);
-      } catch (error) {
-        toast.error("Error fetching courses");
-        console.error("Error fetching courses:", error);
+        console.log("response.data", response);
+
+        setCourses(response?.data || []);
+      } catch (err) {
+        handleError(err);
+        toast.info(error);
       } finally {
         setLoading(false);
       }
@@ -36,7 +40,7 @@ export default function Dashboard() {
     if (user) {
       fetchCourses();
     }
-  }, [user]);
+  }, [user, handleError, error]);
 
   return (
     <div>

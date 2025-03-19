@@ -29,8 +29,9 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       // Handle token expiration
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      // commented this till I am done fixing the type errors
+      // localStorage.removeItem("token");
+      // window.location.href = "/login";
     }
     return Promise.reject(error);
   }

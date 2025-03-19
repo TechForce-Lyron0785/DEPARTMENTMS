@@ -13,7 +13,7 @@ export default function UserList() {
     const fetchUsers = async () => {
       try {
         const response = await userService.getAllUsers();
-        setUsers(response);
+        setUsers(response.data);
       } catch (err) {
         setError("Failed to fetch users.");
         console.error(err);

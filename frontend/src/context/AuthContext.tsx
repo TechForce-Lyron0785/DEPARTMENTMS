@@ -26,27 +26,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Verify token and load user data
       const loadUserData = async () => {
         try {
-          const response = await authService.verifyToken(token); // Assuming you have a method to verify the token
-          console.log("response", response);
+          const response = await authService.verifyToken(token);
+          console.log("verifytoken response", response);
 
-          setUser(response.user); // Set the user data
+          setUser(response.data);
         } catch (error) {
           console.error("Failed to load user data:", error);
-          localStorage.removeItem("token"); // Remove invalid token
+          localStorage.removeItem("token");
         }
-        setLoading(false); // Set loading to false after attempting to load user data
+        setLoading(false);
       };
 
       loadUserData();
     } else {
-      setLoading(false); // No token, just set loading to false
+      setLoading(false);
     }
   }, []);
 
   const login = async (email: string, password: string) => {
     const response = await authService.login({ email, password });
-    localStorage.setItem("token", response.token);
-    setUser(response.user);
+    localStorage.setItem("token", response.data.token);
+    setUser(response.data.user);
   };
 
   const logout = async () => {

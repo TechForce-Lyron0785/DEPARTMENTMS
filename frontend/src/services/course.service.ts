@@ -5,13 +5,13 @@ import {
   UpdateCourseData,
   CourseWithDetails,
 } from "../types/course";
-import { ApiResponse, PaginatedResponse, QueryParams } from "../types/api";
+import { ApiResponse, QueryParams } from "../types/api";
 import { User } from "@/types/user";
 
 export const courseService = {
   getAllCourses: async (
     params?: QueryParams
-  ): Promise<ApiResponse<PaginatedResponse<Course>>> => {
+  ): Promise<ApiResponse<Course[]>> => {
     const response = await axios.get("/courses", { params });
     return response.data;
   },
@@ -19,7 +19,7 @@ export const courseService = {
   getLecturerCourses: async (
     lecturerId: string,
     params?: QueryParams
-  ): Promise<ApiResponse<PaginatedResponse<Course>>> => {
+  ): Promise<ApiResponse<Course[]>> => {
     const response = await axios.get(`/courses/lecturer/${lecturerId}`, {
       params,
     });

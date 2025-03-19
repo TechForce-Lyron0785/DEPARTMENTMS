@@ -13,7 +13,7 @@ export const CourseList = () => {
       try {
         clearError();
         const response = await courseService.getAllCourses();
-        setCourses(response.data.data);
+        setCourses(response.data);
       } catch (err) {
         handleError(err);
       } finally {

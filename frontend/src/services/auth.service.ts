@@ -8,13 +8,15 @@ import {
 } from "../types/user";
 
 export const authService = {
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await axios.post<AuthResponse>("/auth/login", credentials);
+  login: async (
+    credentials: LoginCredentials
+  ): Promise<ApiResponse<AuthResponse>> => {
+    const response = await axios.post("/auth/login", credentials);
     return response.data;
   },
 
   register: async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await axios.post<AuthResponse>("/auth/signup", data);
+    const response = await axios.post("/auth/signup", data);
     return response.data;
   },
 

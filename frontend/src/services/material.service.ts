@@ -4,13 +4,13 @@ import {
   CreateMaterialData,
   MaterialWithDetails,
 } from "../types/material";
-import { ApiResponse, PaginatedResponse, QueryParams } from "../types/api";
+import { ApiResponse, QueryParams } from "../types/api";
 
 export const materialService = {
   getMaterialsByCourse: async (
     courseId: string,
     params?: QueryParams
-  ): Promise<ApiResponse<PaginatedResponse<Material>>> => {
+  ): Promise<ApiResponse<Material[]>> => {
     const response = await axios.get(`/materials/${courseId}`, {
       params,
     });

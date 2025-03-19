@@ -27,15 +27,19 @@ export default function CourseCard({ course, actionButton }: CourseCardProps) {
           <>
             <p className="text-gray-500">
               Lecturer Name:{" "}
-              {typeof course.lecturer === "string"
-                ? "N/A"
-                : course.lecturer.name}
+              {course.lecturer
+                ? typeof course.lecturer === "string"
+                  ? "N/A"
+                  : course.lecturer.name
+                : "N/A"}
             </p>
             <p className="text-gray-500">
               Lecturer Email:{" "}
-              {typeof course.lecturer === "string"
-                ? "N/A"
-                : course.lecturer.email}
+              {course.lecturer
+                ? typeof course.lecturer === "string"
+                  ? "N/A"
+                  : course.lecturer.email
+                : "N/A"}
             </p>
           </>
         )}

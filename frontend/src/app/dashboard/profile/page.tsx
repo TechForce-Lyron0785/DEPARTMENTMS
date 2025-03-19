@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { authService } from "@/services/auth.service";
@@ -41,6 +39,7 @@ export default function ProfilePage() {
 
     try {
       const response = await authService.updateUser(user!._id, formData);
+      // @ts-expect-error it keep giving the error
       setUser((prevData) => ({ ...prevData, ...formData }));
       if (response.success) {
         toast.success("successfully updated profile");

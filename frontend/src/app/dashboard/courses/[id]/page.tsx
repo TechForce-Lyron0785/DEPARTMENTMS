@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { courseService } from "@/services/course.service";
@@ -8,54 +7,55 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { formatDate } from "../../../../../utils/formatDate";
 import { toast } from "react-toastify";
+import { CourseWithDetails } from "@/types/course";
+import { Material } from "@/types/material";
+import { User } from "@/types/user";
+import { useApiError } from "@/hooks/useApiError";
+
+interface Params {
+  id: string;
+}
 
 export default function CourseDetailsPage() {
-  const { id } = useParams();
-  console.log("id", id);
-
+  const { id } = useParams() as unknown as Params;
   const { user } = useAuth();
-  const [course, setCourse] = useState(null);
-  const [materials, setMaterials] = useState([]);
+  const [course, setCourse] = useState<CourseWithDetails | null>(null);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [activeTab, setActiveTab] = useState("materials");
-  const [students, setStudents] = useState([]);
+  const [students, setStudents] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { error, handleError } = useApiError();
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
         const courseResponse = await courseService.getCourseById(id);
-        setCourse(courseResponse);
+        setCourse(courseResponse.data);
 
         const materialsResponse = await materialService.getMaterialsByCourse(
           id
         );
-        setMaterials(materialsResponse);
+        setMaterials(materialsResponse.data);
 
-        // Fetch students associated with the course
         const studentsResponse = await courseService.getStudentsByCourse(id);
-        console.log("studentsResponse", studentsResponse.data);
-
-        setStudents(studentsResponse.data); // Set the full student details
+        setStudents(studentsResponse.data);
       } catch (err) {
-        setError("Failed to fetch course details.");
-        console.error(err);
+        handleError(err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCourseDetails();
-  }, [id]);
+  }, [id, handleError]);
 
-  const handleDeleteMaterial = async (materialId) => {
+  const handleDeleteMaterial = async (materialId: string) => {
     try {
       await materialService.deleteMaterial(materialId);
       toast.info("Material has been successfully deleted!");
       setMaterials((prev) => prev.filter((m) => m._id !== materialId));
     } catch (err) {
-      setError("Failed to delete material.");
-      console.error(err);
+      handleError(err);
     }
   };
 
@@ -108,14 +108,14 @@ export default function CourseDetailsPage() {
           )}
         </div>
         <div className="flex items-center text-gray-600 mb-4">
-          <span className="mr-4">Course Code: {course.courseCode}</span>
+          <span className="mr-4">Course Code: {course?.courseCode}</span>
         </div>
-        <p className="text-gray-700 mb-4">{course.description}</p>
+        <p className="text-gray-700 mb-4">{course?.description}</p>
         <div className="flex items-center text-sm text-gray-500">
           <span className="mr-4">
-            No of Enrolled Students: {course.students.length}
+            No of Enrolled Students: {course?.students?.length || 0}
           </span>
-          <span>No of Materials: {course.materials.length}</span>
+          <span>No of Materials: {course?.materials?.length || 0}</span>
         </div>
       </div>
       <div className="bg-white rounded-lg shadow">
@@ -147,7 +147,7 @@ export default function CourseDetailsPage() {
           {/* Materials Tab */}
           {activeTab === "materials" && (
             <div>
-              {materials.length > 0 ? (
+              {materials?.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -172,10 +172,8 @@ export default function CourseDetailsPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {(material.uploadedAt &&
-                              formatDate(material.uploadedAt)) ||
-                              (material.updatedAt &&
-                                formatDate(material.updatedAt))}
+                            {material.updatedAt &&
+                              formatDate(material.updatedAt)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <a
@@ -223,7 +221,7 @@ export default function CourseDetailsPage() {
           {activeTab === "students" && (
             <div>
               <h2 className="text-lg font-semibold mb-4">
-                Enrolled Students ({students.length})
+                Enrolled Students ({students?.length || 0})
               </h2>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -238,18 +236,22 @@ export default function CourseDetailsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {students.map((student) => (
-                      <tr key={student._id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-medium text-gray-900">
-                            {student.name}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {student.email}
-                        </td>
-                      </tr>
-                    ))}
+                    {students?.length > 0 ? (
+                      students.map((student) => (
+                        <tr key={student._id}>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="font-medium text-gray-900">
+                              {student.name}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {student.email}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <p>No Students Found</p>
+                    )}
                   </tbody>
                 </table>
               </div>

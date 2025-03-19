@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import CourseCard from "@/components/CourseCard";
 import { Course } from "@/types/course";
-// import Link from "next/link";
 import { courseService } from "@/services/course.service";
 import { toast } from "react-toastify";
 
@@ -18,9 +17,7 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       try {
         const response = await courseService.getAllCourses();
-        console.log("response", response);
-
-        setCourses(response.data.data);
+        setCourses(response.data);
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
@@ -35,14 +32,19 @@ export default function CoursesPage() {
 
   const handleEnroll = async (courseId: string) => {
     try {
-      const response = await courseService.enrollStudent(courseId); // Call the enroll endpoint
+      const response = await courseService.enrollStudent(courseId);
+      console.log("handleEnroll", response);
+
       toast.success("Course enrolled successfully");
-      console.log("Enrollment response:", response);
-      // Optionally, you can update the local state to reflect the enrollment
       setCourses((prevCourses) =>
         prevCourses.map((course) =>
           course._id === courseId
-            ? { ...course, students: [...course.students, user._id] }
+            ? ({
+                ...course,
+                students: Array.isArray(course.students)
+                  ? [...course.students, user!._id]
+                  : [user!._id],
+              } as Course)
             : course
         )
       );
@@ -54,15 +56,18 @@ export default function CoursesPage() {
   const handleDisenroll = async (courseId: string) => {
     try {
       const response = await courseService.disenrollStudent(courseId);
+      console.log("handleDisenroll", response);
+
       toast.info("Course disenrolled successfully");
-      console.log("Disenrollment response:", response);
       setCourses((prevCourses) =>
         prevCourses.map((course) =>
           course._id === courseId
-            ? {
+            ? ({
                 ...course,
-                students: course.students.filter((id) => id !== user._id),
-              }
+                students: Array.isArray(course.students)
+                  ? course.students.filter((id) => id !== user!._id)
+                  : [],
+              } as Course)
             : course
         )
       );
@@ -71,13 +76,18 @@ export default function CoursesPage() {
     }
   };
 
-  const filteredCourses = courses.filter(
-    (course) =>
+  const filteredCourses = courses.filter((course) => {
+    const lecturerName =
+      typeof course.lecturer === "object" && course.lecturer
+        ? course.lecturer.name
+        : "";
+
+    return (
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.courseCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.lecturer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ""
-  );
+      lecturerName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <div>
@@ -112,7 +122,9 @@ export default function CoursesPage() {
       ) : filteredCourses.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCourses.map((course) => {
-            const isEnrolled = course.students.includes(user._id);
+            const isEnrolled = course.students
+              ? (course.students as string[]).includes(user!._id)
+              : false;
             return (
               <CourseCard
                 key={course._id}
