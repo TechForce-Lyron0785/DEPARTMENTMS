@@ -62,23 +62,11 @@ The Department Management System (DMS) is designed to streamline educational ope
 
 ## Screenshots
 
-![Landing Page](https://i.imgur.com/wdoVJFC.jpeg)
-_Landing Page_
-
-![Login Page](https://i.imgur.com/AKhT6oN.jpeg)
-_Login Page_
-
-![Register Page](https://i.imgur.com/ZOpo4pU.jpeg)
-_Registration Page_
-
-![Dashboard](https://i.imgur.com/d3IZkBU.jpeg)
-_Dashboard View_
-
-![Course Management](https://i.imgur.com/AuH7OyJ.jpeg)
-_Create Course_
-
-![User Profile](https://i.imgur.com/lSh6g33.jpeg)
-_User Profile Page_
+|                                                        |                                                   |
+| :----------------------------------------------------: | :-----------------------------------------------: |
+|   ![Landing Page](https://i.imgur.com/wdoVJFC.jpeg)    |  ![Login Page](https://i.imgur.com/AKhT6oN.jpeg)  |
+|   ![Register Page](https://i.imgur.com/ZOpo4pU.jpeg)   |  ![Dashboard](https://i.imgur.com/d3IZkBU.jpeg)   |
+| ![Course Management](https://i.imgur.com/AuH7OyJ.jpeg) | ![User Profile](https://i.imgur.com/lSh6g33.jpeg) |
 
 ## Future Development Roadmap
 
